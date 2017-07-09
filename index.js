@@ -30,7 +30,7 @@ var server = http.createServer((req,res)=>{
                                                                                   deadline    : deadline
                                                                                 }));
               res.write('File ' + task_name + '.json was created');
-          } else res.write('Error - Aceasta eroare apare in cazul in care nu este indicat in <form> ID-ul in fisierul create.html');
+          } else res.write('Error - Aceasta eroare apare in cazul in care in fisierul create.html la <form action="/create/task" method="get"> nu este indicat /  dupa task ');
         } else  res.write(fs.readFileSync('./public/create.html'));
 
     } else if(action == "show" && entity == "task"){
