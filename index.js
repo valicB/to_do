@@ -18,10 +18,16 @@ var server = http.createServer((req,res)=>{
             var title = id.split('?')[1].split('&')[0].split('=')[1];
             var description = id.split('?')[1].split('&')[1].split('=')[1];
             var deadline = id.split('?')[1].split('&')[2].split('=')[1];
-            //cream  un array pentru a pune in el denumirea fisierelor din database.
-            var arr=[];
-            tasks.forEach(function(item){ arr.push(item.split('.')[0]); }); // item.split('.')[0]) - luam doar prima parte din denumirea fisierului.functia push() adauga de fiecare data elementul la sfarsitul array-ului
-            task_name = Math.max(...arr) + 1; // functia Math.max(...array) - returneaza maximum din array. adunam 1 pentru a obtine o noua denumire la fisierul json nou creat
+            // Metota 1 - gasim maximum prin adaugarea numerelor in array
+            // var arr=[];
+            // tasks.forEach(function(item){ arr.push(item.split('.')[0]); });
+            // task_name = Math.max(...arr) + 1;
+            // Metoda 2 - gasim maximum prin comparatie
+            var task_name = 0;
+            tasks.forEach(function(item){
+              if(task_name < Number(item.split('.')[0])) task_name = Number(item.split('.')[0]);
+            });
+            task_name = task_name + 1;
             // if(!fs.existsSync('./database/' + task_name + '.json')){ - nu mai este nevoie de verificare pentru ca de fiecare data se verifica toate fisierele din database si se creaza unul nou cu o cifra mai mare
               fs.writeFileSync('./database/' + task_name + '.json', JSON.stringify({
                                                                                   id          : task_name,
