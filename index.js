@@ -20,14 +20,9 @@ var server = http.createServer((req,res)=>{
             var deadline = id.split('?')[1].split('&')[2].split('=')[1];
             //cream  un array pentru a pune in el denumirea fisierelor din database.
             var arr=[];
-            tasks.forEach(function(item){ arr.push(item.split('.')[0]); }); // item.split('.')[0]) - luam doar prima parte din denumirea fisierului.
-            //functia push() adauga de fiecare data elementul la sfarsitul array-ului
-            // console.log(Math.max(...arr));
-            task_name = Math.max(...arr) + 1; // functia Math.max(...array) - returneaza maximum din array. adunam 1 pentru a
-            //obtine o noua denumire la fisierul json nou creat
-            // console.log(task_name);
-            // if(!fs.existsSync('./database/' + task_name + '.json')){ - nu mai este nevoie de verificare pentru ca de fiecare data se verifica
-            // toate fisierele din database si se creaza unul nou cu o cifra mai mare
+            tasks.forEach(function(item){ arr.push(item.split('.')[0]); }); // item.split('.')[0]) - luam doar prima parte din denumirea fisierului.functia push() adauga de fiecare data elementul la sfarsitul array-ului
+            task_name = Math.max(...arr) + 1; // functia Math.max(...array) - returneaza maximum din array. adunam 1 pentru a obtine o noua denumire la fisierul json nou creat
+            // if(!fs.existsSync('./database/' + task_name + '.json')){ - nu mai este nevoie de verificare pentru ca de fiecare data se verifica toate fisierele din database si se creaza unul nou cu o cifra mai mare
               fs.writeFileSync('./database/' + task_name + '.json', JSON.stringify({
                                                                                   id          : task_name,
                                                                                   title       : title,
@@ -35,25 +30,17 @@ var server = http.createServer((req,res)=>{
                                                                                   deadline    : deadline
                                                                                 }));
               res.write('File ' + task_name + '.json was created');
-            // } else res.write('File ' + task_id + '.json exists' + fs.readFileSync('./database/' + task_id + '.json'));
           } else res.write('Error - Aceasta eroare apare in cazul in care nu este indicat in <form> ID-ul in fisierul create.html');
         } else  res.write(fs.readFileSync('./public/create.html'));
 
     } else if(action == "show" && entity == "task"){
-        if(id !== undefined){
+        if(id !== undefined && id.length > 0){
             if(fs.existsSync('./database/' + id + '.json')) res.write(fs.readFileSync('./database/' + id + '.json'));
             else res.write('404. File not found');
-        } else{
-            if(fs.existsSync('./database/' + id + '.json')){
-              tasks.forEach(function(item) {
-                fs.readFileSync('./database/' + item);
-                res.write(fs.readFileSync('./database/' + item));
-              });
-            } else res.write('No more files found');
-        }
+        } else tasks.forEach(function(item) { res.write(fs.readFileSync('./database/' + item)) });
 
     } else if (action == "delete" && entity == "task") {
-        if (id !== undefined){
+        if (id !== undefined && id.length > 0){
           if(fs.existsSync('./database/' + id + '.json')){
             fs.unlinkSync('./database/' + id + '.json');
             res.write('File ' + id + '.json was deleted');
@@ -62,7 +49,7 @@ var server = http.createServer((req,res)=>{
         } else {
             if(tasks[0]){
               tasks.forEach(function(item) { fs.unlinkSync('./database/' + item) });
-              res.write('Files was deleted');
+              res.write('All files were deleted');
             } else res.write('No more files found');
         }
 
