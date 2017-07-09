@@ -13,7 +13,6 @@ var server = http.createServer((req,res)=>{
     // console.log(tasks);
     if(action == "create" && entity == "task"){
         if(id !== undefined && id.length > 0){
-          var task_id = id.split('?')[0];
           if(id.split('?')[1] !== undefined){
             var title = id.split('?')[1].split('&')[0].split('=')[1];
             var description = id.split('?')[1].split('&')[1].split('=')[1];
@@ -21,21 +20,21 @@ var server = http.createServer((req,res)=>{
             // Metota 1 - gasim maximum prin adaugarea numerelor in array
             // var arr=[];
             // tasks.forEach(function(item){ arr.push(item.split('.')[0]); });
-            // task_name = Math.max(...arr) + 1;
+            // task_id = Math.max(...arr) + 1;
             // Metoda 2 - gasim maximum prin comparatie
-            var task_name = 0;
+            var task_id = 0;
             tasks.forEach(function(item){
-              if(task_name < Number(item.split('.')[0])) task_name = Number(item.split('.')[0]);
+              if(task_id < Number(item.split('.')[0])) task_id = Number(item.split('.')[0]);
             });
-            task_name = task_name + 1;
-            // if(!fs.existsSync('./database/' + task_name + '.json')){ - nu mai este nevoie de verificare pentru ca de fiecare data se verifica toate fisierele din database si se creaza unul nou cu o cifra mai mare
-              fs.writeFileSync('./database/' + task_name + '.json', JSON.stringify({
-                                                                                  id          : task_name,
+            task_id = task_id + 1;
+            // if(!fs.existsSync('./database/' + task_id + '.json')){ - nu mai este nevoie de verificare pentru ca de fiecare data se verifica toate fisierele din database si se creaza unul nou cu o cifra mai mare
+              fs.writeFileSync('./database/' + task_id + '.json', JSON.stringify({
+                                                                                  id          : task_id,
                                                                                   title       : title,
                                                                                   description : description,
                                                                                   deadline    : deadline
                                                                                 }));
-              res.write('File ' + task_name + '.json was created');
+              res.write('File ' + task_id + '.json was created');
           } else res.write('Error - Please check URL.');
         } else  res.write(fs.readFileSync('./public/create.html'));
 
