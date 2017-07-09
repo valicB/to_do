@@ -12,12 +12,33 @@ var server = http.createServer((req,res)=>{
     var tasks = fs.readdirSync('./database/');
     // console.log(tasks);
     if(action == "create" && entity == "task"){
-        if(id !== undefined){
-          if(!fs.existsSync('./database/' + id + '.json')){
-            fs.writeFileSync('./database/' + id + '.json', JSON.stringify({ id: id }));
-            res.write('File ' + id + '.json was created');
-          } else res.write('File ' + id + '.json exists' + fs.readFileSync('./database/' + id + '.json'));
-        } else res.write('The filename is not set. Please set the filename');
+        if(id !== undefined && id.length > 0){
+          var task_id = id.split('?')[0];
+          if(id.split('?')[1] !== undefined){
+            var title = id.split('?')[1].split('&')[0].split('=')[1];
+            var description = id.split('?')[1].split('&')[1].split('=')[1];
+            var deadline = id.split('?')[1].split('&')[2].split('=')[1];
+            //cream  un array pentru a pune in el denumirea fisierelor din database.
+            var arr=[];
+            tasks.forEach(function(item){ arr.push(item.split('.')[0]); }); // item.split('.')[0]) - luam doar prima parte din denumirea fisierului.
+            //functia push() adauga de fiecare data elementul la sfarsitul array-ului
+            // console.log(Math.max(...arr));
+            task_name = Math.max(...arr) + 1; // functia Math.max(...array) - returneaza maximum din array. adunam 1 pentru a
+            //obtine o noua denumire la fisierul json nou creat
+            // console.log(task_name);
+            // if(!fs.existsSync('./database/' + task_name + '.json')){ - nu mai este nevoie de verificare pentru ca de fiecare data se verifica
+            // toate fisierele din database si se creaza unul nou cu o cifra mai mare
+              fs.writeFileSync('./database/' + task_name + '.json', JSON.stringify({
+                                                                                  id          : task_name,
+                                                                                  title       : title,
+                                                                                  description : description,
+                                                                                  deadline    : deadline
+                                                                                }));
+              res.write('File ' + task_name + '.json was created');
+            // } else res.write('File ' + task_id + '.json exists' + fs.readFileSync('./database/' + task_id + '.json'));
+          } else res.write('Error - Aceasta eroare apare in cazul in care nu este indicat in <form> ID-ul in fisierul create.html');
+        } else  res.write(fs.readFileSync('./public/create.html'));
+
     } else if(action == "show" && entity == "task"){
         if(id !== undefined){
             if(fs.existsSync('./database/' + id + '.json')) res.write(fs.readFileSync('./database/' + id + '.json'));
@@ -30,6 +51,7 @@ var server = http.createServer((req,res)=>{
               });
             } else res.write('No more files found');
         }
+
     } else if (action == "delete" && entity == "task") {
         if (id !== undefined){
           if(fs.existsSync('./database/' + id + '.json')){
@@ -43,6 +65,7 @@ var server = http.createServer((req,res)=>{
               res.write('Files was deleted');
             } else res.write('No more files found');
         }
+
     } else {
         res.write('404. Page not found');
     }
